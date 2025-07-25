@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>CCNA風シミュレータ（動作確認済）</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; padding: 1em; }
+    #terminal { height: 400px; overflow-y: auto; border: 1px solid #0f0; padding: 1em; margin-bottom: 10px; white-space: pre-wrap; }
+    #cliInput { width: 100%; background: #000; color: #0f0; border: 1px solid #0f0; font-family: monospace; padding: 0.5em; }
+    .prompt { color: #0f0; }
+  </style>
+</head>
+<body>
+  <h2>🧪 CCNA風コマンドシミュレータ（再構築・修正版）</h2>
+  <div id="terminal">
+    <div class="prompt" id="prompt">Router1#</div>
+  </div>
+  <input id="cliInput" placeholder="コマンドを入力してEnter" autocomplete="off">
+
+  <script>
+    const routers = {
+      Router1: createRouter("Router1"),
+      Router2: createRouter("Router2"),
+      Router3: createRouter("Router3"),
+      Router4: createRouter("Router4")
+    };
+
+    function createRouter(name) {
+      return {
+        hostname: name,
+        interfaces: {
+          "FastEthernet0/0": { ip: "", up: false },
+          "FastEthernet0/1": { ip: "", up: false }
+        },
+        currentInterface: null
+      };
+    }
+
+    let currentRouter = routers["Router1"];
+    const terminal = document.getElementById("terminal");
+    const input = document.getElementById("cliInput");
+    const prompt = document.getElementById("prompt");
+
+    input.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        const cmd = input.value.trim();
+        printLine(`${prompt.textContent} ${cmd}`);
+        handleCommand(cmd);
+        input.value = "";
+        terminal.scrollTop = terminal.scrollHeight;
+      }
+    });
+
+    function printLine(text) {
+      const line = document.createElement("div");
+      line.textContent = text;
+      terminal.insertBefore(line, prompt);
+    }
+
+    function handleCommand(cmd) {
+      const lcCmd = cmd.toLowerCase();
+
+      if (lcCmd.startsWith("use ")) {
+        const name = cmd.split(" ")[1];
+        const routerKey = Object.keys(routers).find(k => k.toLowerCase() === name.toLowerCase());
+        if (routerKey) {
+          currentRouter = routers[routerKey];
+          currentRouter.currentInterface = null;
+          prompt.textContent = `${currentRouter.hostname}#`;
+        } else {
+          printLine("% Unknown router name");
+        }
+      } else if (lcCmd.startsWith("interface ")) {
+        const intf = cmd.split(" ")[1];
+        if (currentRouter.interfaces[intf]) {
+          currentRouter.currentInterface = intf;
+          prompt.textContent = `${currentRouter.hostname}(config-if)#`;
+        } else {
+          printLine("% Invalid interface name");
+        }
+      } else if (lcCmd.startsWith("ip address")) {
+        const parts = cmd.split(" ");
+        const ip = parts[2];
+        if (currentRouter.currentInterface && ip) {
+          currentRouter.interfaces[currentRouter.currentInterface].ip = ip;
+          printLine(`IP address ${ip} set on ${currentRouter.currentInterface}`);
+        } else {
+          printLine("% IP設定に失敗しました");
+        }
+      } else if (lcCmd === "shutdown") {
+        if (currentRouter.currentInterface) {
+          currentRouter.interfaces[currentRouter.currentInterface].up = false;
+          printLine(`${currentRouter.currentInterface} is now administratively down`);
+        } else {
+          printLine("% Interface not selected");
+        }
+      } else if (lcCmd === "no shutdown") {
+        if (currentRouter.currentInterface) {
+          currentRouter.interfaces[currentRouter.currentInterface].up = true;
+          printLine(`${currentRouter.currentInterface} is now up`);
+        } else {
+          printLine("% Interface not selected");
+        }
+      } else if (lcCmd === "exit") {
+        currentRouter.currentInterface = null;
+        prompt.textContent = `${currentRouter.hostname}#`;
+      } else if (lcCmd === "show ip interface brief") {
+        printLine("Interface         IP-Address     Status");
+        for (const [intf, info] of Object.entries(currentRouter.interfaces)) {
+          printLine(`${intf.padEnd(18)} ${info.ip.padEnd(15)} ${info.up ? "up" : "administratively down"}`);
+        }
+      } else {
+        printLine("% Unrecognized command");
+      }
+    }
+  </script>
+</body>
+</html>
