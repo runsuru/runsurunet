@@ -1,4 +1,4 @@
-# Cisco C890ルータ構成自動化（Ansible + ChatGPT）※Private用
+# Cisco C890ルータ構成自動化（Ansible + ChatGPT）
 
 このリポジトリは、ネットワーク機器（主にCisco C890シリーズ）の構成を **Ansible** を使って自動化するPlaybookとRoleを管理するものです。  
 構成や変数設計の大部分は、**ChatGPTを活用しながら作成**しました。
