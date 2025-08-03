@@ -1,0 +1,6 @@
+- name: Configure IP prefix-list
+  ios_config:
+    lines: >-
+      {% for item in prefix_list %}
+      ip prefix-list {{ prefix_list_name }} {{ item.action }} {{ item.network }}
+      {% endfor %}

@@ -1,0 +1,9 @@
+logging_host: 10.1.100.250
+ssh_vlan: 10
+extra_vlans:
+  - 20
+  - 30
+peer_group_name: PEERS
+peer_timers: [5, 15]
+# Vaultファイルを読み込む（これを追記）
+ansible_included_vars: "{{ lookup('file', 'inventory/group_vars/cisco_c890_vault.yml') | from_yaml }}"

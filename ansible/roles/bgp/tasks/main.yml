@@ -1,0 +1,16 @@
+- name: Configure BGP
+  ios_config:
+    parents: "router bgp {{ bgp_as }}"
+    lines:
+      - bgp log-neighbor-changes
+      - network {{ bgp_networks[0].ip }} mask {{ bgp_networks[0].mask }}
+      - neighbor {{ peer_group_name }} peer-group
+      - neighbor {{ peer_group_name }} remote-as {{ bgp_remote_as }}
+      - neighbor {{ peer_group_name }} description BGP peer group
+      - neighbor {{ peer_group_name }} password 7 {{ peer_password }}
+      - neighbor {{ peer_group_name }} timers {{ peer_timers[0] }} {{ peer_timers[1] }}
+      - neighbor {{ peer_group_name }} route-map {{ route_map_name }} in
+      - neighbor {{ bgp_neighbor_ip }} peer-group {{ peer_group_name }}
+    match: exact
+    replace: line
+    save_when: modified

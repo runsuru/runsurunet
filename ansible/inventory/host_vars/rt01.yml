@@ -1,0 +1,49 @@
+hostname: rt01
+
+# Loopbackインターフェース
+loopback_interface: Loopback0
+loopback_ip: 1.1.1.1
+loopback_mask: 255.255.255.255
+
+# GigabitEthernetインターフェース
+gig_interfaces:
+  - name: GigabitEthernet0
+    ip: 192.168.12.1
+    mask: 255.255.255.252
+    duplex: auto
+    speed: auto
+
+# FastEthernetインターフェース（0のみVLANに割り当て）
+fast_interfaces:
+  - name: FastEthernet0
+    access_vlan: 10
+    shutdown: false
+  - name: FastEthernet1
+    shutdown: true
+  - name: FastEthernet2
+    shutdown: true
+  - name: FastEthernet3
+    shutdown: true
+  - name: FastEthernet4
+    shutdown: true
+  - name: FastEthernet5
+    shutdown: true
+  - name: FastEthernet6
+    shutdown: true
+  - name: FastEthernet7
+    shutdown: true
+  - name: FastEthernet8
+    shutdown: true
+
+# BGP設定
+bgp_as: 65001
+bgp_networks:
+  - { ip: 1.1.1.1, mask: 255.255.255.255 }
+bgp_remote_as: 65002
+bgp_neighbor_ip: 192.168.12.2
+
+# Prefix-listとRoute-map
+prefix_list_name: FROM_rt02_ONLY
+prefix_list:
+  - { action: permit, network: 2.2.2.2/32 }
+route_map_name: RM_FROM_rt02

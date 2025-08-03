@@ -1,0 +1,20 @@
+- name: Create VLAN10
+  ios_config:
+    lines:
+      - vlan {{ ssh_vlan }}
+    save_when: modified
+
+- name: Configure VLAN{{ ssh_vlan }} interface for SSH
+  ios_config:
+    lines:
+      - description "### for ssh ###"
+      - ip address dhcp
+    parents: interface Vlan{{ ssh_vlan }}
+    match: exact
+    replace: line
+    save_when: modified
+
+- name: Create extra VLANs
+  ios_config:
+    lines: "{{ item }}"
+  loop: "{{ extra_vlans | map('regex_replace', '^', 'vlan ') | list }}"

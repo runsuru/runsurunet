@@ -1,0 +1,40 @@
+# Loopback インターフェースの設定
+- name: Configure loopback interface
+  ios_config:
+    parents: "interface {{ loopback_interface }}"
+    lines:
+      - ip address {{ loopback_ip }} {{ loopback_mask }}
+    match: exact
+    replace: line
+    save_when: modified
+
+# GigabitEthernet インターフェースの設定
+- name: Configure GigabitEthernet interfaces
+  ios_config:
+    parents: "interface {{ item.name }}"
+    lines:
+      - ip address {{ item.ip }} {{ item.mask }}
+      - duplex {{ item.duplex }}
+      - speed {{ item.speed }}
+      - no shutdown
+    match: exact
+    replace: line
+    save_when: modified
+  loop: "{{ gig_interfaces }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+# FastEthernet インターフェースの設定
+- name: Configure FastEthernet interfaces
+  ios_config:
+    parents: "interface {{ item.name }}"
+    lines:
+      - "{% if item.access_vlan is defined %}switchport access vlan {{ item.access_vlan }}{% endif %}"
+      - "{% if item.shutdown %}shutdown{% else %}no shutdown{% endif %}"
+      - no ip address
+    match: exact
+    replace: line
+    save_when: modified
+  loop: "{{ fast_interfaces }}"
+  loop_control:
+    label: "{{ item.name }}"

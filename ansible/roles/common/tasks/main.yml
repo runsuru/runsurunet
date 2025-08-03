@@ -1,0 +1,21 @@
+- name: Set enable secret
+  ios_config:
+    lines:
+      - enable secret {{ enable_password }}
+
+- name: Set logging host
+  ios_config:
+    lines:
+      - logging {{ logging_host }}
+
+- name: Enable CEF
+  ios_config:
+    lines:
+      - ip cef
+      - no ipv6 cef
+
+- name: Enable SSH and disable DNS lookup
+  ios_config:
+    lines:
+      - ip ssh version 2
+      - no ip domain-lookup

@@ -1,0 +1,9 @@
+- name: Configure route-map
+  ios_config:
+    parents: "route-map {{ route_map_name }} permit 10"
+    lines:
+      - match ip address prefix-list {{ prefix_list_name }}
+      - set local-preference 1000
+    match: exact
+    replace: line
+    save_when: modified
