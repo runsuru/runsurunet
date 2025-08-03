@@ -76,7 +76,7 @@ peer_password: 045802150C2E1D1C5A
 ---
 
 ### 編集方法
-
+パスワードは、`cisco123`で編集できます。
 ```bash
 ansible-vault edit inventory/group_vars/cisco_c890_vault.yml
 ```
