@@ -1,0 +1,13 @@
+- name: Configure Cisco C890 Routers
+  hosts: cisco_c890
+  vars_files:
+    - ../inventory/group_vars/cisco_c890_vault.yml
+  gather_facts: no
+
+  tasks:
+    - include_role: { name: common }
+    - include_role: { name: vlan }
+    - include_role: { name: interface }
+    - include_role: { name: ip_prefix_list }
+    - include_role: { name: route_map }
+    - include_role: { name: bgp }
