@@ -122,6 +122,9 @@ end
 ```
 </details>
 
+### Cisco のモジュール
+
+このディレクトリには **ios_config** モジュールを使った Cisco C890 用のPlaybookが含まれています。  
 
 ### Playbookの実行方法
 ```bash
